@@ -1,0 +1,42 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+private-evidence/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+.venv-*/
+venv/
+.coverage
+htmlcov/
+
+# Local models and output
+models/
+*.gguf
+*.safetensors
+*.bin
+*.log
+*.jsonl
+results/raw/
+evidence/raw/
+failed-cases.json
+full-check.json
+*.bak
+
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
