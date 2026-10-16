@@ -1,7 +1,7 @@
 # ADLC Server-Side Guardrails
 
 > **AI Security · Guardrails Engineering · LLM Agent Security**  
-> An educational implementation and assessment of server-side guardrails for an LLM-agent lab, focusing on instruction/data separation, policy decisions, authorization, tool-result validation and output checks.
+> An educational assessment of server-side guardrails for an LLM-agent lab, focusing on instruction/data separation, policy decisions, authorization, tool-result validation and output checks.
 
 ![Focus](https://img.shields.io/badge/focus-AI%20Security-17365D)
 ![Scope](https://img.shields.io/badge/scope-Server--Side%20Guardrails-0F6B78)
@@ -14,7 +14,7 @@ This repository presents the third ADLC security assignment as a standalone port
 
 The central design principle is that **untrusted text and model-generated intent must not replace trusted application policy or authorization**.
 
-The work is derived from an educational lab maintained separately by its upstream author: [makrushind/adlc-lab](https://github.com/makrushind/adlc-lab). This repository is intended to document the assessment and the researcher's changes; it is not a claim of ownership over the upstream lab or its full test corpus.
+The work is based on an educational lab maintained separately by its upstream author: [makrushind/adlc-lab](https://github.com/makrushind/adlc-lab). This repository documents the assessment and is not a claim of ownership over the upstream lab or its complete test corpus.
 
 ## Assessment status
 
@@ -29,7 +29,7 @@ The latest recorded full regression run covered 208 cases:
 
 The 58 remaining failures were in the `content` group. The `input`, `authorization`, `tool_result`, `output`, `similarity` and `failures` groups passed all supplied assertions in that run.
 
-These are results from a specific educational regression corpus and configuration. They are not a general security guarantee and do not indicate production readiness.
+These results apply to a specific educational regression corpus and configuration. They are not a general security guarantee and do not indicate production readiness.
 
 ## Scope and security controls
 
@@ -41,7 +41,7 @@ These are results from a specific educational regression corpus and configuratio
 - **Output checks:** inspect final responses for unsafe content and sensitive-data leakage.
 - **Failure handling:** test expected detector/runtime failure conditions and document degraded behavior.
 
-## Architecture
+## Conceptual architecture
 
 ```text
 User input / quoted content / tool result
@@ -50,11 +50,11 @@ User input / quoted content / tool result
           Content classification
                   |
                   v
-            Policy decision
+             Policy decision
                   |
            +------+------+
            |             |
-       DENY / BLOCK   Authorization
+        DENY/BLOCK   Authorization
                          |
                          v
                    Tool execution
@@ -66,7 +66,7 @@ User input / quoted content / tool result
                   Final-output checks
 ```
 
-This diagram is conceptual and does not replace the implementation or the detailed assignment evidence. Exact enforcement paths and policy semantics should be reviewed in the implementation before reuse.
+The diagram is conceptual. Exact enforcement paths and policy semantics should be reviewed in the implementation before reuse.
 
 ## Repository contents
 
@@ -75,10 +75,10 @@ This diagram is conceptual and does not replace the implementation or the detail
 | `report/homework-03.md` | Detailed assessment, test results, findings and retest plan |
 | `docs/guardrails-control-matrix.md` | Objective-to-control mapping and observed evidence |
 | `docs/architecture.md` | Trust boundaries and high-level control flow |
-| `docs/methodology.md` | How to interpret the regression results |
+| `docs/methodology.md` | Interpretation of regression results |
 | `SECURITY.md` | Responsible testing and evidence-handling guidance |
 
-Implementation source files will be added only after checking what can be redistributed from the upstream educational lab. The upstream checkout and its data should be obtained from the original source and used under its applicable terms.
+Implementation files will be added after confirming what can be redistributed from the upstream educational lab. Obtain the upstream checkout and its data from the original source under its applicable terms.
 
 ## Reproducing the recorded test
 
@@ -94,13 +94,13 @@ To inspect a single case:
 .\.venv-guardrails\Scripts\python.exe -m homework explain CASE
 ```
 
-These commands assume the separate upstream lab checkout, its required package/dependency setup and the relevant test assets are available. They are not guaranteed to work from this documentation-only repository yet.
+These commands assume the separate upstream lab checkout, its package/dependency setup and relevant test assets are available. They are not guaranteed to work from this documentation-only repository yet.
 
-## Key findings and limitations
+## Findings and limitations
 
-The latest recorded aggregate passed all supplied assertions for input handling, authorization, tool-result checks, output checks, similarity checks and expected failure handling. The principal remaining weakness is content classification, where quoted scams/injections, harmful-generation requests, policy questions and reason-code specificity still need further triage.
+The latest recorded aggregate passed all supplied assertions for input handling, authorization, tool-result checks, output checks, similarity checks and expected failure handling. The principal remaining weakness is content classification, where quoted scams/injections, harmful-generation requests, policy questions and reason-code specificity need further triage.
 
-A passing group demonstrates compliance with that group's supplied assertions only. It does not prove resistance to untested payloads, configurations or attack techniques. This project is an educational assessment, not a production-ready guardrail framework or a security certification.
+A passing group demonstrates compliance with that group's supplied assertions only. It does not prove resistance to untested payloads, configurations or attack techniques. This is an educational assessment, not a production-ready guardrail framework or a security certification.
 
 ## Related projects
 
