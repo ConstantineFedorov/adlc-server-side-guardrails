@@ -1,21 +1,21 @@
 # ADLC Server-Side Guardrails
 
-> **AI Security · Guardrails Engineering · LLM Agent Security**  
-> An educational implementation and assessment of server-side guardrails for an LLM-agent lab.
+> **AI Security · Guardrails Engineering · LLM Agent Security**
+>
+> A prototype and security assessment of server-side guardrails for classifying content, enforcing policy, validating tool interactions, and checking model output.
 
-![Focus](https://img.shields.io/badge/focus-AI%20Security-17365D)
+![Domain](https://img.shields.io/badge/domain-AI%20Security-17365D)
 ![Scope](https://img.shields.io/badge/scope-Server--Side%20Guardrails-0F6B78)
-![Status](https://img.shields.io/badge/status-Educational%20Prototype-lightgrey)
+![Assessment](https://img.shields.io/badge/type-Security%20Prototype-596579)
+![Regression](https://img.shields.io/badge/regression-208%20cases-6B46C1)
 
-## Overview
+## 1. Overview
 
-This repository contains the Homework 3 assessment, supporting security documentation, and six modified Python source files for a server-side guardrail layer. The work focuses on separating trusted application policy from untrusted text and model-generated intent.
+The central design principle is that **model output, user input, retrieved content, and tool results must not replace trusted application policy or authorization**.
 
-The central principle is that **model output, user input, retrieved content, and tool results must not replace trusted application policy or authorization**.
+This repository contains modified guardrail modules, supporting security documentation, and the recorded regression assessment. It is an overlay on the separately maintained [ADLC lab](https://github.com/makrushind/adlc-lab), not a self-contained installable package.
 
-The project is based on the educational lab maintained separately by [makrushind/adlc-lab](https://github.com/makrushind/adlc-lab). This repository is an educational overlay/patch and is not currently a self-contained installable package.
-
-## Assessment status
+## 2. Executive Summary
 
 Latest recorded full regression run:
 
@@ -26,21 +26,21 @@ Latest recorded full regression run:
 | Content classification | 96 / 154 passed |
 | Other groups | 54 / 54 passed |
 
-All 58 recorded failures were in the `content` group. The `input`, `authorization`, `tool_result`, `output`, `similarity` and `failures` groups passed all supplied assertions in that run.
+All 58 recorded failures were in the `content` group. The `input`, `authorization`, `tool_result`, `output`, `similarity`, and `failures` groups passed all supplied assertions in that run.
 
-These results describe one educational regression corpus and configuration. They are not a general security guarantee and do **not** indicate production readiness. The results are recorded from a local run and have not been independently reproduced from this repository.
+These figures describe one recorded regression corpus and configuration. They do not establish general attack-detection accuracy or production readiness, and the run has not been independently reproduced from this repository.
 
-## Security controls in scope
+## 3. Security Controls in Scope
 
-- **Policy decisions:** classify requests and select actions/reason codes.
-- **Instruction versus data:** consider quoted or analyzed text without automatically treating it as an active instruction.
-- **Similarity gate:** validate numeric inputs and consider attack similarity alongside benign similarity.
+- **Policy decisions:** classify requests and select actions and reason codes.
+- **Instruction versus data:** distinguish active instructions from quoted or analyzed text.
+- **Similarity gate:** validate numeric inputs and compare attack similarity with benign similarity.
 - **Authorization:** check permissions before sensitive tool execution.
 - **Tool-result validation:** treat external tool output as untrusted and inspect it before further use.
 - **Output checks:** inspect final responses for unsafe content and sensitive-data leakage.
-- **Failure handling:** exercise expected detector/runtime failure behavior and fail safely when required components are unavailable.
+- **Failure handling:** exercise detector/runtime failure behavior and fail safely when required components are unavailable.
 
-## Conceptual architecture
+## 4. Conceptual Architecture
 
 ```text
 User input / quoted content / tool result
@@ -65,51 +65,54 @@ User input / quoted content / tool result
                   Final-output checks
 ```
 
-This diagram is conceptual. Review the implementation and its runtime integration before relying on any specific enforcement path.
+This is a conceptual flow. Review the implementation and runtime integration before relying on any specific enforcement path.
 
-## Repository layout
+## 5. Results and Remaining Work
 
-| Path | Purpose |
-|---|---|
-| `src/aiweekend_target/guardrails/weak/` | Six modified guardrail source files |
-| `report/homework-03.md` | Assessment summary, findings, recorded results and retest plan |
-| `docs/guardrails-control-matrix.md` | Security objectives mapped to controls and evidence |
-| `docs/architecture.md` | Trust boundaries and conceptual control flow |
-| `docs/methodology.md` | Methodology and interpretation of regression results |
-| `SECURITY.md` | Responsible testing and evidence-handling guidance |
-| `ATTRIBUTION.md` | Upstream project, license and scope notes |
-| `LICENSE` | Upstream MIT license text retained with attribution |
+Content classification remains the primary follow-up area. The recorded failures include cases involving quoted scam/injection content, harmful-generation requests, policy questions, and reason-code specificity.
 
-Implementation files included:
-`authorization.py`, `detectors.py`, `engine.py`, `output_checks.py`, `policy.py` and `similarity.py`.
+A passing test group demonstrates compliance with the supplied assertions for that group only. It does not prove resistance to untested payloads, integrations, configurations, or attack techniques.
 
-## Reproducing the recorded test
+## 6. Reproduction
 
-The recorded run used the separate upstream lab checkout, Python 3.13+ and its homework runner. From the root of that checkout, the commands were:
+The recorded run used the separate upstream lab checkout, Python 3.13+ and its test runner:
 
 ```powershell
 .\.venv-guardrails\Scripts\python.exe -m homework check
 .\.venv-guardrails\Scripts\python.exe -m homework explain CASE
 ```
 
-Replace `CASE` with a case identifier when inspecting one test. These commands are **not expected to work from this repository alone**: the overlay depends on upstream package modules, configuration, data and test assets. To reproduce or extend the work, first obtain the upstream lab and its dependencies, then apply/review the modified files at the matching package paths. The recorded result has not been verified by a fresh run from this repository.
+Replace `CASE` with a case identifier to inspect an individual test. These commands are not expected to work from this repository alone: the overlay depends on upstream modules, configuration, data, and test assets. The recorded result has not been verified by a fresh run from this repository.
 
-## Findings and limitations
+## 7. Repository Structure
 
-Content classification is the primary remaining follow-up area. The recorded failures include cases involving quoted scam/injection content, harmful-generation requests, policy questions and reason-code specificity. See [the detailed report](report/homework-03.md) and [control matrix](docs/guardrails-control-matrix.md).
+| Path | Purpose |
+|---|---|
+| `src/aiweekend_target/guardrails/weak/` | Modified guardrail modules |
+| `report/` | Detailed assessment and recorded results |
+| `docs/guardrails-control-matrix.md` | Security objectives mapped to controls and evidence |
+| `docs/architecture.md` | Trust boundaries and conceptual control flow |
+| `docs/methodology.md` | Methodology and interpretation of regression results |
+| `SECURITY.md` | Responsible testing and evidence handling |
+| `ATTRIBUTION.md` | Upstream provenance, license, and scope notes |
 
-A passing test group demonstrates compliance with that group's supplied assertions only. It does not prove resistance to untested payloads, integrations, configurations or attack techniques. This project is an educational prototype, not a production-ready guardrail framework or security certification.
+Implementation files include `authorization.py`, `detectors.py`, `engine.py`, `output_checks.py`, `policy.py`, and `similarity.py`.
 
-## Related projects
+## 8. Recommended Next Steps
 
-- [DocsAgent Security Assessment — Homework 1](https://github.com/ConstantineFedorov/docsagent-security-assessment)
-- [ADLC Agent Security Assessment — Homework 2](https://github.com/ConstantineFedorov/adlc-agent-security-assessment)
-- [Upstream ADLC lab](https://github.com/makrushind/adlc-lab)
+1. Review content-classification failures by category and preserve each as a regression case.
+2. Separate action selection from reason-code classification and test both.
+3. Retain passing cases for quoted content, policy questions, and output checks.
+4. Keep authorization as an independent check before sensitive tool execution.
+5. Test similarity logic with benign pairs, boundary values, invalid types, and non-finite numbers.
+6. Repeat the full regression suite after significant changes and retain the exact result artifact.
 
-## Interview summary
+## 9. Related Work
 
-> I assessed and modified an educational server-side guardrail layer for an LLM-agent lab. The work covered policy decisions, instruction-versus-data handling, similarity checks, authorization before sensitive tool calls, tool-result validation and final-output checks. The latest recorded regression run passed 150 of 208 cases, with all 58 remaining failures in content classification. I documented the limitations and follow-up work rather than presenting the prototype as production-ready.
+- [DocsAgent Security Assessment](https://github.com/ConstantineFedorov/docsagent-security-assessment) — RAG, MCP metadata, and privileged side effects.
+- [ADLC Agent Security Assessment](https://github.com/ConstantineFedorov/adlc-agent-security-assessment) — poisoned tool-result testing and runtime enforcement.
+- [Agent Runtime Security](https://github.com/ConstantineFedorov/agent-runtime-security-lab) — runtime telemetry processing and session reconstruction.
 
-## Responsible use
+## 10. Limitations and Responsible Use
 
-Test only systems you own or are explicitly authorized to assess. Use isolated environments and harmless test values. Do not publish credentials, private logs, local model files or sensitive evidence. See [ATTRIBUTION.md](ATTRIBUTION.md) and the retained upstream license text for provenance and license information. The upstream author has not endorsed this repository or its modifications.
+This repository is a prototype/overlay, not a production-ready guardrail framework or security certification. The upstream author has not endorsed this repository or its modifications. Test only systems you own or are explicitly authorized to assess. Keep credentials, private logs, local model files, and sensitive evidence out of version control.
